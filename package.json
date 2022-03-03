@@ -1,0 +1,152 @@
+{
+  "ManifestComments": [
+    "Only add dependencies that you want shipped to the end user, for everything else, use devDependencies, including things that will be bundled by webpack.",
+    "NW.js requires a name and a main, everything else is optional.",
+    "The build section is used by nwjs-builder-phoenix, see its documentation for more info",
+    "To turn spell checking off, remove it from the chromium-args in this file"
+  ],
+  "name": "paxson_manager",
+  "version": "1.0.0",
+  "main": "http://localhost:8964",
+  "node-remote": "http://localhost:8964",
+  "node-main": "",
+  "window": {
+    "width": 1920,
+    "height": 1080,
+    "min_width": 700,
+    "min_height": 500,
+    "icon": "src/assets/vue.png"
+  },
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run serve\" \"wait-on http://localhost:8964 && nw .\"",
+    "serve": "vue-cli-service serve --port=8964",
+    "build": "npm run build:clean && npm run build:vue && npm run build:nw",
+    "build:clean": "rimraf ./dist-vue ./dist",
+    "build:vue": "vue-cli-service build --modern --dest ./dist-vue",
+    "build:nw": "build --concurrent --tasks win-x86,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
+    "build:win": "npm run build:win:clean && npm run build:vue && build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
+    "build:lin": "npm run build:lin:clean && npm run build:vue && build --tasks linux-x64 --mirror https://dl.nwjs.io/ .",
+    "build:win:clean": "rimraf ./dist-vue ./dist/nw-vue-1.9.0-win-x86 ./dist/nw-vue-1.9.0-win-x86.zip ./dist/nw-vue-1.9.0-win-x86.7z ./dist/nw-vue-1.9.0-win-x86-Setup.exe",
+    "build:lin:clean": "rimraf ./dist-vue ./dist/nw-vue-1.9.0-linux-x64 ./dist/nw-vue-1.9.0-linux-x64.zip",
+    "run:win": "dist\\nw-vue-1.9.0-win-x86\\nw-vue.exe",
+    "run:lin": "./dist/nw-vue-1.9.0-linux-x64/nw-vue",
+    "regression": "rd /s /q node_modules & rd /s /q node_modules & rd /s /q node_modules & npm install && npm run lint && npm test && npm run build:win && npm run run:win",
+    "lint": "vue-cli-service lint --no-fix",
+    "fix": "vue-cli-service lint --fix",
+    "test": "npm run test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit": "jest --config jest.config.js --coverage",
+    "validate": "npm run lint && npm run test:unit && npm run build:vue",
+    "update:vue-devtools": "rimraf ./node_modules/nw-vue-devtools-prebuilt && npm install"
+  },
+  "dependencies": {
+    "@mdi/font": "^6.5.95",
+    "@mdi/js": "^6.5.95",
+    "express": "^4.17.2",
+    "get-repository-url": "^2.0.0",
+    "mdi-vue": "^3.0.12",
+    "nw-electron-adapter": "^1.0.0",
+    "sweetalert2": "^11.4.0",
+    "vue-material": "^1.0.0-beta-15"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.16.5",
+    "@vue/cli-plugin-babel": "^5.0.0-rc.2",
+    "@vue/cli-plugin-e2e-nightwatch": "^5.0.0-rc.2",
+    "@vue/cli-plugin-eslint": "^5.0.0-rc.2",
+    "@vue/cli-plugin-unit-jest": "^5.0.0-rc.2",
+    "@vue/cli-service": "^4.5.15",
+    "@vue/test-utils": "^1.3.0",
+    "@vue/vue2-jest": "^27.0.0-alpha.4",
+    "concurrently": "^7.0.0",
+    "core-js": "^3.20.3",
+    "eslint": "^8.7.0",
+    "eslint-config-tjw-base": "^1.0.0",
+    "eslint-config-tjw-vue": "^2.1.0",
+    "eslint-plugin-jest": "^25.7.0",
+    "eslint-plugin-vue": "^8.3.0",
+    "eslint-plugin-vuejs-accessibility": "^1.1.1",
+    "jest-serializer-vue-tjw": "^3.19.0",
+    "nw": "0.60.0-sdk",
+    "nw-vue-devtools-prebuilt": "^0.0.10",
+    "nwjs-builder-phoenix": "^1.15.0",
+    "nwjs-types": "^1.0.0",
+    "rimraf": "^3.0.2",
+    "sass": "^1.49.8",
+    "sass-loader": "^10.2.1",
+    "vue": "^2.6.14",
+    "vue-template-compiler": "^2.6.14",
+    "wait-on": "^6.0.0"
+  },
+  "chromium-args": "--enable-spell-checking --load-extension='./node_modules/nw-vue-devtools-prebuilt/extension'",
+  "build": {
+    "nwVersion": "v0.60.0",
+    "nwFlavor": "normal",
+    "targets": [
+      "zip",
+      "nsis7z"
+    ],
+    "files": [
+      "**/*"
+    ],
+    "excludes": [
+      "e2e/**/*",
+      "src/**/*",
+      "tests/**/*",
+      "public/**/*",
+      "dist-vue/**/*.js.map",
+      "dist-vue/**/*.css.map",
+      "dist-vue/**/*-legacy*",
+      ".browserslistrc",
+      ".eslintrc",
+      ".gitignore",
+      ".editorconfig",
+      "babel.config.js",
+      "CODE_OF_CONDUCT.md",
+      "cypress.json",
+      "jest.config.js",
+      "nightwatch.conf.js",
+      "nightwatch.json",
+      "package-lock.json",
+      "screenshot.png",
+      "selenium-debug.log",
+      "postcss.config.js",
+      "vue.config.js"
+    ],
+    "strippedProperties": [
+      "ManifestComments",
+      "scripts",
+      "devDependencies",
+      "build"
+    ],
+    "overriddenProperties": {
+      "main": "http://localhost:8965",
+      "node-remote": "http://localhost:8965",
+      "node-main": "server.js",
+      "chromium-args": "--enable-spell-checking",
+      "window": {
+        "width": 960,
+        "height": 600,
+        "min_width": 700,
+        "min_height": 500,
+        "icon": "dist-vue/icon.png"
+      }
+    },
+    "win": {
+      "icon": "public/icon-256.ico"
+    },
+    "mac": {
+      "icon": "public/icon.icns"
+    },
+    "nsis": {
+      "icon": "public/icon-256.ico",
+      "unIcon": "public/icon.ico",
+      "languages": [
+        "English"
+      ],
+      "diffUpdaters": false,
+      "hashCalculation": true
+    }
+  }
+}
