@@ -1,8 +1,8 @@
-# DT Added libraries
+# Added libraries
 
 [Vue Material](https://www.creative-tim.com/vuematerial/getting-started)
 
-# DT Notes:
+# Notes:
 This is using Vue 2.6.14. The boilerplate is still in beta for Vue3.
 
 # nw-vue-cli-example
