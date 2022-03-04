@@ -1,79 +1,59 @@
+# Paxson Manager (WIP)
+This project is an attempt at a node project manager. It is designed to help manage package.json files inside of complex projects. For example, one could have a folder heirarchy like this:
+
+ProjectFolder
+
+-Apps
+
+--FirstApp
+
+--SecondApp
+
+-Services
+
+--ServiceOne
+
+--ServiceTwo
+
+-Backend
+
+--BackendOne
+
+--BackendTwo
+
+Each of those subfolders could have a package.json as they are their own components. This application has a few features to try to help.
+
+## Settings
+This is where you will create the projects to be managed, set their directory, and add path exclusions. You should always add the node_modules as part of your path exclusions. Selecting a project will automatically run the lookups for "Sync Package.json" and "Check Dependencies". No changes are made to the project at this time.
+
+## Sync Package.json
+This will compare each package.json with the package-lock.json. It looks for differences between the declared package version and what is actually installed. If they do not match, they will be highlighted in red. Select the packages you want synced and click "Sync Selected Packages". This will edit the package.json files dependency packages that you have selected.
+
+## Check Dependencies
+This gets all of the dependencies from each package.json in the project directory. 
+
+***WARNING: if node_modules is not in path exceptions, this will take a LONG time to process.***
+
+After getting the dependencies, Check Dependencies utilizes the "npm outdated" command to check each package for outdated modules. The intention here is to find major package changes (for example, from 4.0.5 to 12.1.8). Any package that is not latest will be marked red. This activity also uses the get-repository-url npm package from https://github.com/jonschlinkert/get-repository-url to get the repositories for those dependencies. The intent is to help lookup the changes faster.
+
+## Update Packages
+Upcoming feature...
+
+## Test Packages
+Upcoming feature..
+
+## Increment Semvers
+Upcoming feature..
+
+## Publish Packages
+Upcoming feature..
+
 # Added libraries
 
 [Vue Material](https://www.creative-tim.com/vuematerial/getting-started)
 
 # Notes:
 This is using Vue 2.6.14. The boilerplate is still in beta for Vue3.
-
-# nw-vue-cli-example
-
-[![Build Status](https://travis-ci.org/nwutils/nw-vue-cli-example.svg?branch=master)](https://travis-ci.org/nwutils/nw-vue-cli-example)
-
-* 1.x releases use: Vue 2 + NW.js latest + Vue-CLI 4
-* 2.x releases use: Vue 3 + NW.js latest + Vue-CLI latest
-
-![A screenshot of the default app running on Windows](screenshot.png)
-
-**Comes with:**
-
-* NW.js 0.60.0
-  * Chrome 97
-  * Node 17.3.0
-* Vue-CLI 4.5.15
-* Vue 2.6.14
-* Vue-DevTools (latest)
-* Babel
-* ESLint
-  * Vue Linting
-  * A11Y Linting
-  * Jest Linting
-* Jest (100% test coverage)
-* Jest Serializer Vue (TJW)
-
-
-*Does this work for web or just desktop?*
-
-**Both**. This repo will build both for web and desktop and includes a simple `this.isDesktop` flag so you can add Desktop specific features that won't show on the web. This repo has 100% test coverage including tests for both web and desktop builds. You could even theoretically add NativeScript-Vue into the mix and build for native mobile as well (though that is not set up in this repo).
-
-
-*Why not include Vue-Router or Vuex?*
-
-Those are both very easily added from the Vue-CLI. There is also no custom styling libraries (Bulma, Bootstrap, etc), or meta-languages (Sass, TS, Pug, etc), or component libraries (Vuetify, Inkline, etc). This repo is meant to be the "go to" option for building **all** desktop apps using Vue. So it avoids pushing any particular choices on to you. With the exception of testing being set up for Jest, and Linting being set up to ensure minumum quality of this boilerplate repo itself. Both of which can be easily modified, ignored, or removed.
-
-If you want to load the app with a splash screen, check the `nw-splasher` branch.
-
-## Documentation
-
-In all .vue components, you have access to `nw`, `global`, `process`, `require`, and the boolean `isDesktop`:
-
-```js
-methods: {
-  example: function () {
-    if (this.isDesktop) {
-      console.log('Your OS is ' + this.process.platform);
-      console.log('Your AppData location is ' + this.nw.App.dataPath);
-      // Sets a value on Node's global, meaning other windows have access to this data.
-      this.global.cow = 'moo';
-      // The contents of the current directory
-      console.log(this.require('fs').readdirSync('.'));
-    }
-  }
-}
-```
-
-Or even directly from the template (with some slight changes to work within the Vue context):
-```html
-<div v-if="isDesktop">
-  Your OS is {{ process.platform }}.
-  Your AppData location is {{ nw.App.dataPath }}.
-  <button @click="nw.global.cow = 'moo'">
-    Clicking this button sets a value on Node's global.
-    Meaning other windows have access to this data.
-  </button>
-  The contents of the current directory are {{ nw.require('fs').readdirSync('.') }}.
-</div>
-```
-
 
 ## Running Locally for development
 
@@ -93,53 +73,3 @@ Or even directly from the template (with some slight changes to work within the 
 # **IMPORTANT NOTE ABOUT BUILDS!!!**
 
 They take a long time. If you do `npm run build` expect it to take 10-30 minutes. This can be adjusted by changing the build params in the `package.json`. The more platforms and build types, the longer it takes. You can also remove the `--concurrent` from the `build:nw` script to see a status of what has been completed. This will allow individual pieces to finish faster, but the entire build will take longer.
-
-
-## Automated quality enforcment
-
-1. **Linting:** `npm run lint` - Uses rules in `./eslint.json`
-1. **Unit tests:** `npm run test:unit` - [Jest](https://jestjs.io).
-1. **End-to-end:** `npm run test:e2e` - Accepting PR to make tests run in NW.js. - [Nightwatch](https://nightwatchjs.org).
-
-
-### Customize configuration
-
-Want Vue-Router? Vuex? Use the Vue-CLI to add them:
-
-* [Vue-CLI documentation](https://cli.vuejs.org/config).
-
-
-* * *
-
-
-## Updating Vue-DevTools
-
-To update your version of Vue-DevTools run `npm run update:vue-devtools`.
-
-This will download the source code for the latest version of Vue-DevTools and do a custom build for NW.js. This ensures you always have the latest version.
-
-
-* * *
-
-
-## Alternatives
-
-* [nwjs-vue](https://github.com/elegantweb/nwjs-vue) - Uses Vue-CLI 2
-* [vue-desktop-basic](https://github.com/TheJaredWilcurt/vue-desktop-basic) - Does not use a build system at all, all `.vue` files run directly in the browser context
-
-
-* * *
-
-
-## Maintainence of this repo
-
-This is not for those *using* this repo, but for those *maintaining* it.
-
-1. When updating the version of NW.js devDependency, also update these:
-   * `package.json` devDeps, build nwVersion
-   * `tests/unit/setup.js`
-   * `tests/unit/components/__snapshots__/HelloWorld.test.js.snap`
-   * `.browserslistrc`
-1. Update the version numbers at the top of the README
-1. Bump the version number, and all the npm scripts that reference the version number
-1. Run `npm run regression` after updating dependencies or other major changes to verify builds still work correctly
