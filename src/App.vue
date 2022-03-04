@@ -17,13 +17,24 @@
             <span class="md-list-item-text">{{ navi.text }}</span>
             <md-badge v-if="navi.notices" class="md-square" :mdContent="navi.notices" />
           </md-list-item>
+          <md-progress-bar v-if="navi.processing" mdMode="indeterminate" />
         </md-list>  
       </md-app-drawer>
 
       <md-app-content>
         <app-settings v-show="appSettingsVisible" @project-switch="reloadActivities" />
-        <sync-packages v-show="syncPackagesVisible" :currentProject="currentProject" @mismatches-detected="updateNotices" />
-        <check-dependencies v-show="checkDependenciesVisible" :currentProject="currentProject" />
+        <sync-packages 
+          v-show="syncPackagesVisible" 
+          :currentProject="currentProject" 
+          @mismatches-detected="updateNotices" 
+          @background-processing="updateProcessing" 
+        />
+        <check-dependencies 
+          v-show="checkDependenciesVisible" 
+          :currentProject="currentProject" 
+          @outOfDate-detected="updateNotices"
+          @background-processing="updateProcessing"
+        />
       </md-app-content>
     </md-app>
   </div>
@@ -114,8 +125,15 @@ export default {
       let obj = this.navItems.filter(bob => {
         return bob.text === text;
       });
-      console.log(obj);
       obj[0].notices = notices;
+      let index = this.navItems.indexOf(obj[0]);
+      this.navItems.splice(index, 1, obj[0]);
+    },
+    updateProcessing: function (text, processing) {
+      let obj = this.navItems.filter(bob => {
+        return bob.text === text;
+      });
+      obj[0].processing = processing;
       let index = this.navItems.indexOf(obj[0]);
       this.navItems.splice(index, 1, obj[0]);
     }

@@ -47,7 +47,6 @@
     "get-repository-url": "^2.0.0",
     "mdi-vue": "^3.0.12",
     "nw-electron-adapter": "^1.0.0",
-    "sweetalert2": "^11.4.0",
     "vue-material": "^1.0.0-beta-15"
   },
   "devDependencies": {

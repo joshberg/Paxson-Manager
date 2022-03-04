@@ -16,13 +16,18 @@
         >
           <md-table-head>Dependency Name</md-table-head>
           <md-table-head>Package Version</md-table-head>
+          <md-table-head>Latest Version</md-table-head>
+          <md-table-head>Packages Affected</md-table-head>
           <md-table-head>Repository</md-table-head>
           <check-dep-obj 
             v-for="(dep,index) in DepNames"
             :packageName="dep"
             :version="Dependencies[dep].packageVersion"
+            :latest="Dependencies[dep].latest ? Dependencies[dep].latest : Dependencies[dep].packageVersion"
+            :dependency="Dependencies[dep]"
             :repo="Dependencies[dep].url"
-            :key="index" 
+            :finishedLoading="DependenciesFinished[index]"
+            :key="dep" 
           />
         </md-table>
       </md-card-content>  
@@ -46,11 +51,17 @@ export default {
     isLoadingBarDisplayed: false,
     DepNames: [],
     PackageJSONs: [],
-    DependencyFiles: []
+    DependenciesFinished: [],
+    outOfDateCount: 0
   }),
   methods: {
     GetProjectDependencies: function () {
       this.PackageJSONs = [];
+      this.Dependencies = {};
+      this.DepNames = [];
+      this.DependenciesFinished = [];
+      this.$emit('outOfDate-detected', 'Check Dependencies', 0);
+
 
       if (Object.prototype.hasOwnProperty.call(global.settings, 'PackagePathExclusions')) {
         if (global.settings.PackagePathExclusions.length > 0) {
@@ -118,13 +129,17 @@ export default {
             let deps = packg.dependencies;
             let depNames = Object.keys(deps);
             depNames.forEach(depName => {
-              if (!Object.prototype.hasOwnProperty.call(lclThis.Dependencies, depName)) {
+              // eslint-disable-next-line no-prototype-builtins
+              if (!lclThis.Dependencies.hasOwnProperty(depName)) {
                 lclThis.Dependencies[depName] = { 
                   url:'', 
-                  packageVersion: packg.dependencies[depName].substring(1) 
+                  packageVersion: packg.dependencies[depName].substring(1),
+                  depended: [packg.name]
                 };
                 lclThis.DepNames.push(depName);
                 lclThis.DepNames.sort();
+              } else {
+                lclThis.Dependencies[depName].depended.push(packg.name);
               }
             });
           }
@@ -132,7 +147,7 @@ export default {
       }
       let filesScannedListener = setInterval(function () {
         if (filesScanned >= totalFiles) {
-          console.log('GetDependencies finished. Executing GetDependencyPackages');
+          console.log('GetDependencies finished.');
           clearInterval(filesScannedListener);
           lclThis.GetRepos();
           lclThis.GetLatestVersions();
@@ -140,8 +155,10 @@ export default {
       }, 200);
     },
     GetRepos: function () {
+      console.log('Executing GetRepos');
       const repoURL = this.nw.require('get-repository-url');
       let lclThis = this;
+      console.log(this.DepNames);
       this.DepNames.forEach(dep => {
         repoURL(dep, function (err, url) {
           if (err) {
@@ -153,13 +170,20 @@ export default {
       });
     },
     GetLatestVersions: function () {
+      console.log('Executing GetLatestVersions');
+      this.outOfDateCount = 0;
+      this.isLoadingBarDisplayed = true;
       const spawn = this.nw.require('child_process').spawn;
+      let lclThis = this;
       let dataOut = '';
       let errorOut = '';
+      let foldersChecked = 0;
+      let folderCount = this.PackageJSONs.length;
       this.PackageJSONs.forEach((packFile) => {
-        let packFolder = packFile.replace('package.json', '');
-        let bat = spawn('cmd.exe', ['cd "' + packFolder + '"'], {
-          shell: true
+        let packFolder = packFile.replace('\\package.json', '');
+        let bat = spawn('npm outdated', {
+          shell: true,
+          cwd: packFolder
         });
         bat.stdout.on('data', (data) => {
           dataOut += data.toString();
@@ -167,15 +191,57 @@ export default {
         bat.stderr.on('data', (data) => {
           errorOut += data.toString();
         });
-        bat.on('close', (code) => {
-          console.log('Closing code: ', code);
-          console.log('DataOut: ');
-          console.log(dataOut);
-          console.log('-----------');
-          console.log('ErrorOut: ');
-          console.log(errorOut);
+        bat.on('close', () => {
+          foldersChecked++;
+          if (foldersChecked >= folderCount) {
+            lclThis.isLoadingBarDisplayed = false;
+          }
+          if (errorOut.length > 0) {
+            console.log('Error processing path: ', packFolder);
+            console.log(errorOut);
+          }
         });
       });
+      let npmOutdatedInterval = setInterval(function () { 
+        if (foldersChecked >= folderCount) {
+          clearInterval(npmOutdatedInterval);
+          console.log('GetLatestVersions process are all finished. Checking output...');
+          let lines = dataOut.split('\n');
+          lines.forEach(line => {
+            if (!line.includes('Package')) {
+              let words = line.match(/\S+(\s||$)/g);
+              if (words !== null) {
+                let pckg = words[0].trim();
+                let latest = words[3].trim();
+                if (lclThis.DepNames.includes(pckg)) {
+                  // eslint-disable-next-line no-prototype-builtins
+                  if (!lclThis.Dependencies[pckg].hasOwnProperty('latest')) {
+                    lclThis.Dependencies[pckg].latest = latest;
+                    let index = lclThis.DepNames.indexOf(pckg);
+                    lclThis.DependenciesFinished.splice(index, 1, true);
+                    lclThis.outOfDateCount++;
+                  }
+                }
+              }
+            }
+          });
+        }
+      }, 200);
+    }
+  },
+  watch: {
+    currentProject: function (newValue) {
+      if (newValue !== '') {
+        this.GetProjectDependencies();
+      }
+    },
+    outOfDateCount: function (newValue) {
+      if (newValue !== 0) {
+        this.$emit('outOfDate-detected', 'Check Dependencies', newValue);
+      }
+    },
+    isLoadingBarDisplayed: function (newValue) {
+      this.$emit('background-processing', 'Check Dependencies', newValue);
     }
   }
 };                

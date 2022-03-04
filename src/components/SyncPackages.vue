@@ -69,6 +69,7 @@ export default {
       this.PackageReportUpdated = [];
       this.itemsToSkip = [];
       this.versionMismatchesDetected = 0;
+      this.$emit('mismatches-detected', 'Sync Package.json', 0);
 
       if (Object.prototype.hasOwnProperty.call(global.settings, 'PackagePathExclusions')) {
         if (global.settings.PackagePathExclusions.length > 0) {
@@ -242,6 +243,9 @@ export default {
       if (newValue !== 0) {
         this.$emit('mismatches-detected', 'Sync Package.json', newValue);
       }
+    },
+    isLoadingBarDisplayed: function (newValue) {
+      this.$emit('background-processing', 'Sync Package.json', newValue);
     }
   }
 };
