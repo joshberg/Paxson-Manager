@@ -34,7 +34,7 @@ This gets all of the dependencies from each package.json in the project director
 
 ***WARNING: if node_modules is not in path exceptions, this will take a LONG time to process.***
 
-After getting the dependencies, Check Dependencies utilizes the "npm outdated" command to check each package for outdated modules. The intention here is to find major package changes (for example, from 4.0.5 to 12.1.8). Any package that is not latest will be marked red. This activity also uses the get-repository-url npm package from https://github.com/jonschlinkert/get-repository-url to get the repositories for those dependencies. The intent is to help lookup the changes faster.
+After getting the dependencies, Check Dependencies utilizes the "npm outdated" command to check each package for outdated modules. The intention here is to find major package changes (for example, from 4.0.5 to 12.1.8). Any package that is not latest will be marked red. This activity also uses the [get-repository-url](https://github.com/jonschlinkert/get-repository-url) to get the repositories for those dependencies. The intent is to help lookup the changes faster.
 
 ## Update Packages
 Upcoming feature...
@@ -50,7 +50,11 @@ Upcoming feature..
 
 # Added libraries
 
-[Vue Material](https://www.creative-tim.com/vuematerial/getting-started)
+- [get-repository-url](https://github.com/jonschlinkert/get-repository-url) 
+- [@mdi/font](https://github.com/Templarian/MaterialDesign-Webfont)
+- [@mdi/js](https://github.com/Templarian/MaterialDesign-JS)
+- [mdi-vue](https://github.com/therufa/mdi-vue)
+- [Vue Material](https://www.creative-tim.com/vuematerial/getting-started)
 
 # Notes:
 This is using Vue 2.6.14. The boilerplate is still in beta for Vue3.
