@@ -35,6 +35,11 @@
           @outOfDate-detected="updateNotices"
           @background-processing="updateProcessing"
         />
+        <test-packages
+          v-show="testPackagesVisible"
+          :currentProject="currentProject"
+          @background-processing="updateProcessing"
+        />
       </md-app-content>
     </md-app>
   </div>
@@ -44,13 +49,15 @@
 import appSettings from './components/AppSettings.vue';
 import syncPackages from './components/SyncPackages.vue';
 import checkDependencies from './components/CheckDependencies.vue';
+import TestPackages from './components/TestPackages.vue';
 
 export default {
   name: 'App',
   components: {
     appSettings,
     syncPackages,
-    checkDependencies
+    checkDependencies,
+    TestPackages
   },
   data: () => ({
     currentProject: '',
@@ -58,6 +65,7 @@ export default {
     appSettingsVisible: true,
     syncPackagesVisible: false,
     checkDependenciesVisible: false,
+    testPackagesVisible: false,
     navItems: [
       {
         icon: 'cog',
@@ -98,6 +106,7 @@ export default {
       this.appSettingsVisible = false;
       this.syncPackagesVisible = false;
       this.checkDependenciesVisible = false;
+      this.testPackagesVisible = false;
       switch (action) {
         case 'Settings':
           this.appSettingsVisible = true;
@@ -111,6 +120,7 @@ export default {
         case 'Update Packages':
           break;
         case 'Test Packages':
+          this.testPackagesVisible = true;
           break;
         case 'Increment Semvers':
           break;

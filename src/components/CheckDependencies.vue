@@ -106,7 +106,6 @@ export default {
       return arrayOfFiles;
     },
     GetDependencies: function () {
-      console.log('GetDependencies fired.');
       this.isLoadingBarDisplayed = true;
       let fs = this.nw.require('fs');
       let lclThis = this;
@@ -147,7 +146,6 @@ export default {
       }
       let filesScannedListener = setInterval(function () {
         if (filesScanned >= totalFiles) {
-          console.log('GetDependencies finished.');
           clearInterval(filesScannedListener);
           lclThis.GetRepos();
           lclThis.GetLatestVersions();
@@ -170,7 +168,6 @@ export default {
       });
     },
     GetLatestVersions: function () {
-      console.log('Executing GetLatestVersions');
       this.outOfDateCount = 0;
       this.isLoadingBarDisplayed = true;
       const spawn = this.nw.require('child_process').spawn;
@@ -205,7 +202,6 @@ export default {
       let npmOutdatedInterval = setInterval(function () { 
         if (foldersChecked >= folderCount) {
           clearInterval(npmOutdatedInterval);
-          console.log('GetLatestVersions process are all finished. Checking output...');
           let lines = dataOut.split('\n');
           lines.forEach(line => {
             if (!line.includes('Package')) {

@@ -80,7 +80,6 @@ export default {
       let fs = this.nw.require('fs');
       let projectFolder = global.settings.ProjectPath;
       if (fs.existsSync(projectFolder)) {
-        console.log('Path exists.');
         // Search all folders (except for node_modules) for package.json.
         this.isLoadingBarDisplayed = true;
         this.PackageJSONs = this.GetAllPackageFiles(projectFolder);
@@ -116,7 +115,6 @@ export default {
       return arrayOfFiles;
     },
     CompareDependencies: function () {
-      console.log('comparing dependencies with what is installed');
       this.isLoadingBarDisplayed = true;
       let fs = this.nw.require('fs');
       let lclThis = this;
