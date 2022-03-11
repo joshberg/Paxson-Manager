@@ -1,5 +1,5 @@
 <template>
-  <div v-html="html" :class="{console:true, overflow: content!='TEST WAS NOT SELECTED TO RUN' }">
+  <div v-html="html" :class="{console:true, overflow: content!='UPDATE WAS NOT SELECTED TO RUN' }">
   </div>
 </template>
 
@@ -7,17 +7,13 @@
 import AnsiUp from 'ansi_up';
 
 export default {
-  name: 'ConsoleTestWindow',
+  name: 'ConsoleUpdateWindow',
   props: {
     folder: {
       type: String,
       default: ''
     },
-    testToRun: {
-      type: String,
-      default: 'NOTATEST'
-    },
-    willRunThisTest: {
+    willRunUpdate: {
       type: Boolean,
       default: false
     },
@@ -25,7 +21,7 @@ export default {
       type: Boolean,
       default: false
     },
-    runTest: {
+    runUpdate: {
       type: Boolean,
       default: false
     }
@@ -35,18 +31,18 @@ export default {
       ansi: undefined,
       content: '',
       bat: undefined,
-      testRunning: false
+      updateRunning: false
     };
   },
   methods: {
-    runTestToConsole: function () {
+    runUpdateToConsole: function () {
       this.content = '';
-      if (this.willRunThisTest) {
-        if (!this.testRunning) {
-          this.testRunning = true;
-          console.log('RunTest triggered for test: ', this.folder, this.testToRun);
+      if (this.willRunUpdate) {
+        if (!this.updateRunning) {
+          this.updateRunning = true;
+          console.log('RunUpdate triggered for package: ', this.folder);
           const spawn = this.nw.require('child_process').spawn;
-          this.bat = spawn('npm test ' + this.testToRun, {
+          this.bat = spawn('npm update', {
             shell: true,
             cwd: this.folder
           });
@@ -62,7 +58,7 @@ export default {
           });
         }
       } else {
-        this.content = 'TEST WAS NOT SELECTED TO RUN';
+        this.content = 'PACKAGE WAS NOT SELECTED TO RUN';
       }
     }
   },
@@ -72,8 +68,8 @@ export default {
     }
   },
   watch: {
-    runTest: function () {
-      this.runTestToConsole();
+    runUpdate: function () {
+      this.runUpdateToConsole();
     },
     killProcess: function () {
       this.bat.kill('SIGINT');

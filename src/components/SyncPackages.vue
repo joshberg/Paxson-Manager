@@ -151,7 +151,7 @@ export default {
                   lclThis.PackageReports[pack] = {};
                   depNames.forEach(depName => {
                     lclThis.PackageReports[pack][depName] = {};
-                    lclThis.PackageReports[pack][depName].pckgVersion = packg.dependencies[depName].substring(1);
+                    lclThis.PackageReports[pack][depName].pckgVersion = packg.dependencies[depName].match(/[0-9]+\.[0-9]+\.+[0-9]+/)[0];
                     lclThis.PackageReports[pack][depName].installedVersion = pckglck.packages['node_modules/' + depName].version;
                     lclThis.PackageReports[pack][depName].versionMismatch = lclThis.PackageReports[pack][depName].pckgVersion !== lclThis.PackageReports[pack][depName].installedVersion;
                     if (lclThis.PackageReports[pack][depName].versionMismatch) {

@@ -1,14 +1,21 @@
 <template>
-  <div id="app" class="page-container">
+  <div class="page-container">
     <md-app>
       <md-app-toolbar class="md-primary" mdElevation="0">
-        <span class="md-title">{{ title }}</span>
+        <md-button v-if="!menuVisible" class="md-icon-button" @click="toggleMenu">
+          <md-icon>menu</md-icon>
+        </md-button>
+        <span class="md-title">
+          <span v-if="currentProject.length > 0">{{ currentProject }} - </span>
+          {{ title }}
+        </span>
       </md-app-toolbar>
 
-      <md-app-drawer mdPermanent="full">
-        <md-toolbar class="" mdElevation="0">
-          <div class="">Current Project:</div>
-          <div class="md-title">{{ currentProject }}</div>
+      <md-app-drawer :mdActive.sync="menuVisible" mdPersistent="mini">
+        <md-toolbar class="md-transparent" mdElevation="0">
+          <md-button class="md-icon-button md-dense" @click="toggleMenu">
+            <md-icon class="md-size-3x">keyboard_arrow_left</md-icon>
+          </md-button>
         </md-toolbar>
 
         <md-list v-for="(navi, index) in navItems" :key="index">
@@ -40,6 +47,11 @@
           :currentProject="currentProject"
           @background-processing="updateProcessing"
         />
+        <update-packages
+          v-show="updatePackagesVisible"
+          :currentProject="currentProject"
+          @background-processing="updateProcessing"
+        />
       </md-app-content>
     </md-app>
   </div>
@@ -50,6 +62,7 @@ import appSettings from './components/AppSettings.vue';
 import syncPackages from './components/SyncPackages.vue';
 import checkDependencies from './components/CheckDependencies.vue';
 import TestPackages from './components/TestPackages.vue';
+import UpdatePackages from './components/UpdatePackages.vue';
 
 export default {
   name: 'App',
@@ -57,23 +70,22 @@ export default {
     appSettings,
     syncPackages,
     checkDependencies,
-    TestPackages
+    TestPackages,
+    UpdatePackages
   },
   data: () => ({
+    menuVisible: true,
     currentProject: '',
     title: 'Settings',
     appSettingsVisible: true,
     syncPackagesVisible: false,
     checkDependenciesVisible: false,
     testPackagesVisible: false,
+    updatePackagesVisible: false,
     navItems: [
       {
         icon: 'cog',
         text: 'Settings'
-      },
-      {
-        icon: 'package-variant',
-        text: 'Sync Package.json'
       },
       { 
         icon: 'spider-web',
@@ -82,6 +94,10 @@ export default {
       {
         icon: 'update',
         text: 'Update Packages'
+      },
+      {
+        icon: 'package-variant',
+        text: 'Sync Package.json'
       },
       {
         icon: 'test-tube',
@@ -107,6 +123,7 @@ export default {
       this.syncPackagesVisible = false;
       this.checkDependenciesVisible = false;
       this.testPackagesVisible = false;
+      this.updatePackagesVisible = false;
       switch (action) {
         case 'Settings':
           this.appSettingsVisible = true;
@@ -118,6 +135,7 @@ export default {
           this.checkDependenciesVisible = true;
           break;
         case 'Update Packages':
+          this.updatePackagesVisible = true;
           break;
         case 'Test Packages':
           this.testPackagesVisible = true;
@@ -165,7 +183,7 @@ export default {
 }
 
 .md-app {
-  min-height: 70vh;
+  max-height: 100vh;
   border: 1px solid rgba(#000, 0.12);
 }
 
