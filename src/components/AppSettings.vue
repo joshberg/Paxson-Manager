@@ -107,7 +107,9 @@ export default {
       this.PackagePathExclusions = s.PackagePathExclusions == undefined ? [] : s.PackagePathExclusions;
 
       global.settings = s;
-      this.$emit('project-switch', this.ProjectName);
+      if (this.ProjectPath !== '') {
+        this.$emit('project-switch', this.ProjectName);
+      }
     },
     getProjectPath: function () {
       let files = document.querySelector('input[type=file]').files;

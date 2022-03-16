@@ -10,25 +10,23 @@
             class="md-layout-item md-raised md-primary"
             @click="ScanForPackages"
           >Scan for package.json(s)</md-button>
+          <md-button
+            class="md-layout-item md-raised md-accent"
+            @click="RunUpdates"
+          >Run Update(s)</md-button>
         </md-toolbar>
         <md-content>
-          <md-list>
-            <md-list-item v-for="(folder, ind) in ParentFolders" :key="ind">
-              <md-checkbox v-model="foldersSelected[ind]" class="md-layout-item md-alignment-top-center md-size-5" />
-              <span class="md-layout-item md-size-10">{{ folder }}</span>
-              <md-list class="md-layout-item md-size-85">
-                <md-list-item v-for="(pckg, index) in PackageJSONs.filter(pck => pck.includes(folder))" :key="index">
-                  <md-checkbox v-model="packagesSelected[index]" class="md-layout-item md-size-5" />
-                  <span class="md-layout-item md-size-15">{{ pckg.split('\\')[pckg.split('\\').length-2] }}</span>
-                  <div class="md-layout-item md-size-80 console-output">
-                    <console-update-window 
-                      :folder="pckg"
-                      :willRunUpdate="packagesSelected[index]" 
-                      :runUpdate="runUpdatesNow" 
-                    />
-                  </div>
-                </md-list-item>
-              </md-list>
+          <md-list class="">
+            <md-list-item v-for="(pckg, index) in PackageJSONs" :key="index">
+              <md-checkbox v-model="packagesSelected[index]" class="md-layout-item" />
+              <span class="md-layout-item md-size-20">{{ pckg.split('\\')[pckg.split('\\').length-2] }}</span>
+              <div class="md-layout-item md-size-80 console-output">
+                <console-update-window 
+                  :folder="pckg"
+                  :willRunUpdate="packagesSelected[index]" 
+                  :runUpdate="runUpdatesNow" 
+                />
+              </div>
             </md-list-item>
           </md-list>
         </md-content>
@@ -110,28 +108,13 @@ export default {
       });
 
       return arrayOfFiles;
-    }
-  },
-  computed: {
-    ParentFolders: function () {
-      let rootFolder = global.settings.ProjectPath;
-      let parentFolders = [];
-      this.PackageJSONs.forEach(pckg =>{
-        let folderPath = pckg.replace(rootFolder, '').split('\\');
-        folderPath.splice(0, 1);
-        folderPath.splice(folderPath.length - 1, 1);
-        if (folderPath.length == 1) {
-          parentFolders.push(folderPath[0]);
-        } else {
-          for (let i = 0; i < folderPath.length - 1; i++) {
-            let folder = folderPath[i];
-            if (!parentFolders.includes(folder)) {
-              parentFolders.push(folder);
-            }
-          }
-        }
-      });
-      return parentFolders;
+    },
+    RunUpdates: function () {
+      this.runUpdatesNow = true;
+      let lclThis = this;
+      setTimeout(function () {
+        lclThis.runUpdatesNow = false;
+      }, 500);
     }
   },
   watch: {
@@ -142,6 +125,17 @@ export default {
     },
     isLoadingBarDisplayed: function (newValue) {
       this.$emit('background-processing', 'Sync Package.json', newValue);
+    },
+    foldersSelected: function (newValue) {
+      let lclThis = this;
+      newValue.forEach(val => {
+        let folder = lclThis.ParentFolders[newValue.indexOf(val)];
+        lclThis.PackageJSONs.forEach(pckg => {
+          if (pckg.includes(folder)) {
+            lclThis.packagesSelected[lclThis.PackageJSONs.indexOf(pckg)] = val;
+          }
+        });
+      });
     }
   }
 };

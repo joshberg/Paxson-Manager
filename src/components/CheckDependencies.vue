@@ -132,7 +132,7 @@ export default {
               if (!lclThis.Dependencies.hasOwnProperty(depName)) {
                 lclThis.Dependencies[depName] = { 
                   url:'', 
-                  packageVersion: packg.dependencies[depName].substring(1),
+                  packageVersion: packg.dependencies[depName].match(/[0-9]+\.[0-9]+\.+[0-9]+/)[0],
                   depended: [packg.name]
                 };
                 lclThis.DepNames.push(depName);
