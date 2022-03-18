@@ -77,6 +77,8 @@ export default {
         this.PackageJSONs = this.GetAllPackageFiles(projectFolder);
         this.isLoadingBarDisplayed = false;
         this.GetDependencies();
+      } else {
+        this.isLoadingBarDisplayed = false;
       }
     },
     GetAllPackageFiles: function (dirPath, arrayOfFiles) {

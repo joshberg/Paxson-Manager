@@ -108,7 +108,11 @@ export default {
 
       global.settings = s;
       if (this.ProjectPath !== '') {
-        this.$emit('project-switch', this.ProjectName);
+        if (this.checkIfProjectPathExists()) {
+          this.$emit('project-switch', this.ProjectName);
+        } else {
+          alert('Project path is not valid. Please check the path!');
+        }
       }
     },
     getProjectPath: function () {
@@ -161,6 +165,12 @@ export default {
         this.ProjectPath = null;
         this.PackagePathExclusions = [];
         this.saveProjectSettings();
+      }
+    },
+    checkIfProjectPathExists: function () {
+      let fs = this.nw.require('fs');
+      if (this.ProjectPath !== '') {
+        return fs.existsSync(this.ProjectPath);
       }
     }
   },

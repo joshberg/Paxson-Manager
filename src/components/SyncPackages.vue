@@ -86,6 +86,8 @@ export default {
         this.PackageReportUpdated = new Array(this.PackageJSONs.length);
         this.isLoadingBarDisplayed = false;
         this.CompareDependencies();
+      } else {
+        this.isLoadingBarDisplayed = false;
       }
     },
     GetAllPackageFiles: function (dirPath, arrayOfFiles) {
